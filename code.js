@@ -2,38 +2,41 @@
  * @param {number[]} array which will be mutated in place.
  */
 function quicksort(array) {
-  const stack = []; // 4 keeping track of whatever subarrays need to be sorted.
-  // [startIndex, endIndex] for section which needs to be partitioned. Kinda like a tuple.
-  stack.push([0, array.length - 1]);
+  const stack = []; // keeping track of subarrays that need to be sorted.
+  // [startIndex, endIndex] for section which needs to be partitioned.
+  stack.push([0, array.length - 1]); // by default we need to sort everything in array
 
-  // While we still need to partition the array we will have values in stack.
   while (stack.length > 0) {
     const [start, end] = stack.pop();
+    if (start >= end) continue; // already sorted properly.
 
-    if (start > end) continue; // already sorted propery.
+    const pivotIndex = partition(array, start, end);
 
-    const pivot = partition(array, start, end);
-
-    stack.push([start, pivot - 1]);
-    stack.push([pivot, end]);
+    if (start < pivotIndex - 1) stack.push([start, pivotIndex - 1]);
+    if (pivotIndex + 1 < end) stack.push([pivotIndex + 1, end]);
   }
 
   return array;
 }
 
+/**
+ * @param {number[]} array
+ * @param {number} start
+ * @param {number} end
+ * @returns {number}
+ */
 function partition(array, start, end) {
   const pivot = array[end];
-  let i = start - 1;
+  let i = start;
 
-  // Foreach subarray, swap out of place elements from the pivot to the end of the section
   for (let j = start; j < end; j++) {
-    if (array[j] <= pivot) {
-      i++;
+    if (array[j] < pivot) {
       swap(array, i, j);
+      i++;
     }
   }
 
-  swap(array, i + 1, end);
+  swap(array, i, end);
   return i;
 }
 
